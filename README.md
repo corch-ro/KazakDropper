@@ -6,3 +6,8 @@
 - String Obfuscation
 - Payload decryption.
 - Stealth.
+
+# How to improve :
+- Socket Communication
+- AES-256 Encryption
+- More Obfuscation
