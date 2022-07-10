@@ -47,5 +47,5 @@ namespace KazakDropper
 namespace KazakUtils
 {
 	std::string replace_all(std::string subject, const std::string& search, const std::string& replace);
-	std::string StringWrapper(const std::string url);
+	std::string StringWrapper(const std::string& url);
 }
