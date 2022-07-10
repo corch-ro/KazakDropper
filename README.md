@@ -2,5 +2,7 @@
 
 # Features : 
 - Anti-VM , Anti-Analysis , Anti-Debug.
+- Winapi Call Obfuscation
+- String Obfuscation
 - Payload decryption.
 - Stealth.
