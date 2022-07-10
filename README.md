@@ -1,2 +1,2 @@
 # KazakDropper
-An advanced x86 malware dropper written in C++.
+An advanced x86 DLL payload dropper written in C++.
