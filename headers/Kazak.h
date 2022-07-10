@@ -13,8 +13,9 @@
 
 namespace KazakDropper
 {
-	void EvadeAnalysis();
+	bool EvadeAnalysis();
 	BOOL IsBp(const char* lpszModule, const char* lpszFunction);
 
 	void Stealth();
+	void DropExe();
 }
