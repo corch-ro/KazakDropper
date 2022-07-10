@@ -1,2 +1,6 @@
-# KazakDropper
-An advanced x86 DLL payload dropper written in C++.
+### Kazak Dropper V1.0 - A x86 windows payload dropper.
+
+# Features : 
+- Anti-VM , Anti-Analysis , Anti-Debug.
+- Payload decryption.
+- Stealth.
